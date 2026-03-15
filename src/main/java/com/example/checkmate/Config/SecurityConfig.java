@@ -24,10 +24,11 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http.csrf(AbstractHttpConfigurer::disable)
                 .authenticationProvider(authProvider())
-                .authorizeHttpRequests(auth -> auth.requestMatchers("/api/v1/createAccount").permitAll()
+                .authorizeHttpRequests(auth -> auth.requestMatchers("/api/v1/createAccount", "/login", "/createAccount").permitAll()
                         .anyRequest().authenticated())
-                .formLogin(Customizer.withDefaults())
-                .httpBasic(Customizer.withDefaults());
+                .formLogin(form -> form.defaultSuccessUrl("/api/v1/home", true).loginPage("/login").permitAll())
+                .httpBasic(Customizer.withDefaults())
+                .logout(logout -> logout.logoutUrl("/logout").logoutSuccessUrl("/login").permitAll());
         return http.build();
     }
     @Bean
